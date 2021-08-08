@@ -29,4 +29,7 @@ int valid(int board[9][9], int row, int col, int num);
 */
 int Solve(int board[9][9]);
 
+
+int checkMove(int num, int board[9][9], int row, int col);
+
 #endif

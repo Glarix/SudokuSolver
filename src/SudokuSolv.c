@@ -97,3 +97,19 @@ int Solve(int board[9][9]){
     }
     return 0;
 }  
+
+/**
+ * Function to check if a move is valid or not based on an already solved board
+ * @param num the number to be checked
+ * @param board the already solved matrix
+ * @param row the row to be checked
+ * @param col the column to be checked
+ * @return 0 if the number is valid / 1 if invalid
+**/
+int checkMove(int num, int board[9][9], int row, int col){
+
+    if (board[row][col] == num)
+        return 0;
+    return 1;
+    
+}

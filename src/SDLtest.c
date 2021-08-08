@@ -10,6 +10,8 @@ const int HEIGHT = 600;
 const int ROW = 9;
 const int COL = 9;
 
+int finishFlag = 0;
+
 // Structure of a square from the Sudoku board
 typedef struct sudokuSquare
 {
@@ -100,6 +102,7 @@ int loadBoard(SudSquare board[ROW][COL], int intBoard[ROW][COL], SDL_Renderer *r
             {
                 board[i][j].isSet = true;
                 board[i][j].isSelectable = false;
+                finishFlag++; // Update finishFlag
             }
             SDL_Surface *surface; // Surface pointer
             char msg[5];          // array for storing the value in char form
@@ -191,7 +194,7 @@ void checkSelected(SudSquare board[ROW][COL], SDL_Renderer *renderer)
             {
                 // Set the color to a yellow-ish one
                 SDL_SetRenderDrawColor(renderer, 245, 220, 150, 150);
-                // Fill the square 
+                // Fill the square
                 SDL_RenderFillRect(renderer, &(board[i][j].suSquare));
             }
         }
@@ -220,12 +223,12 @@ void drawBoard(SDL_Renderer *renderer, SDL_Rect rect, SDL_Rect rect2, SudSquare 
     // Function to highlight a square that is not Set but is Selected
     checkSelected(board, renderer);
 
-    // Setting the draw collor to white
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    // Setting the draw collor to purple-ish
+    SDL_SetRenderDrawColor(renderer, 200, 155, 250, 255);
 
     SDL_RenderDrawRect(renderer, &rect);
     SDL_RenderDrawRect(renderer, &rect2);
-    
+
     //Horiontal lines
     for (int i = 90; i < 540; i += 60)
     {
@@ -238,7 +241,7 @@ void drawBoard(SDL_Renderer *renderer, SDL_Rect rect, SDL_Rect rect2, SudSquare 
         SDL_RenderDrawLine(renderer, 30, i, 569, i);
     }
     mod = 1;
-    
+
     //Vertical lines
     for (int i = 90; i < 540; i += 60)
     {
@@ -310,13 +313,13 @@ void getCellByMouse(int *i, int *j, int x, int y)
  * @param j the COL of the square in board
  * @param rend a pointer to the SDL_Renderer used to render the window
  * @param font a pointer to the loaded font
+ * @param textColor the SDL_Color used for the font
  * @return 0 if the number was set succesfully / 1 if failed
 **/
-int placeNumber(int num, SudSquare board[ROW][COL], int i, int j, SDL_Renderer *rend, TTF_Font *font)
+int placeNumber(int num, SudSquare board[ROW][COL], int i, int j, SDL_Renderer *rend, TTF_Font *font, SDL_Color textColor)
 {
     if (!(board[i][j].isSet))
     {
-        SDL_Color textColor = {0, 255, 0, 0}; // Color for the font
         board[i][j].value = num;
         board[i][j].isSelected = false;
         board[i][j].isSelectable = false;
@@ -324,7 +327,7 @@ int placeNumber(int num, SudSquare board[ROW][COL], int i, int j, SDL_Renderer *
         SDL_Surface *surface; // Surface pointer
         char msg[5];          // array for storing the value in char form
         sprintf(msg, "%d", num);
-        surface = TTF_RenderText_Solid(font, msg, textColor);  // Creating the surface
+        surface = TTF_RenderText_Solid(font, msg, textColor); // Creating the surface
         if (!surface)
         {
             printf("Error at creating surface in placeNumber!\n");
@@ -337,29 +340,52 @@ int placeNumber(int num, SudSquare board[ROW][COL], int i, int j, SDL_Renderer *
             SDL_FreeSurface(surface);
             return 1;
         }
-        
+
         SDL_FreeSurface(surface);
     }
 
     return 0;
 }
 
+/**
+ * Function to auto-complete all the remaining Squares
+ * @param matrix a pre-solved matrix containing all the data for Sudoku board
+ * @param board the Sudoku board containing all the squares
+ * @param rend the SDL_Renderer used to render the window
+ * @param font a pointer to the loaded font
+**/
+void autoComplete(int matrix[ROW][COL], SudSquare board[ROW][COL], SDL_Renderer *rend, TTF_Font *font){
+    //sets the color to pink-ish
+    SDL_Color textColor = {237, 52, 135, 0};
+    for (int i = 0; i < ROW; i++)
+    {
+        for (int j = 0; j < COL; j++)
+        {
+            if (!(board[i][j].isSet)){
+                // If the Square is not Set, set the coresponding number and update finishFlag
+                placeNumber(matrix[i][j], board, i, j, rend, font, textColor);
+                finishFlag++;
+            }
+        }    
+    }    
+}
+
 int main()
 {
 
     int matrix[9][9] = {
-        {0, 0, 0, 4, 2, 5, 0, 0, 0},
-        {0, 0, 0, 1, 0, 0, 3, 0, 0},
-        {0, 0, 0, 9, 0, 0, 1, 8, 0},
-        {1, 0, 0, 0, 7, 0, 0, 0, 0},
-        {0, 0, 8, 0, 0, 0, 6, 0, 7},
-        {0, 0, 9, 0, 0, 2, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 5, 0},
-        {0, 2, 0, 0, 9, 0, 0, 4, 0},
-        {5, 4, 0, 0, 0, 0, 0, 0, 1}};
+        {9, 1, 0, 7, 0, 0, 0, 0, 0},
+        {0, 3, 2, 6, 0, 9, 0, 8, 0},
+        {0, 0, 7, 0, 8, 0, 9, 0, 0},
+        {0, 8, 6, 0, 3, 0, 1, 7, 0},
+        {3, 0, 0, 0, 0, 0, 0, 0, 6},
+        {0, 5, 1, 0, 2, 0, 8, 4, 0},
+        {0, 0, 9, 0, 5, 0, 3, 0, 0},
+        {0, 2, 0, 3, 0, 1, 4, 9, 0},
+        {0, 0, 0, 0, 0, 2, 0, 6, 1}};
 
     // The window that is displayed on screen
-    SDL_Window *window = NULL; 
+    SDL_Window *window = NULL;
 
     // The renderer of the screen
     SDL_Renderer *renderer = NULL;
@@ -370,7 +396,8 @@ int main()
         return 1;
 
     // Initialising TTF
-    if(TTF_Init()){
+    if (TTF_Init())
+    {
         printf("Error at initialising TTF! %s\n", TTF_GetError());
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
@@ -385,18 +412,19 @@ int main()
         fprintf(stderr, "error: font not found\n");
         exit(EXIT_FAILURE);
     }
-    
+
     // The Sudoku bord consisting of Square structs
     SudSquare board[ROW][COL];
 
     // loading the initial board with the renderer
     loadBoard(board, matrix, renderer, font);
 
+    Solve(matrix);
+
     // the two rects that go around the board
     SDL_Rect rect = {30, 30, 540, 540};
     SDL_Rect rect2 = {29, 29, 539, 539};
-    
-    
+
     SDL_Event event;
 
     // While true the game is running
@@ -409,7 +437,7 @@ int main()
         // Square coordinates
         int i, j;
         while (SDL_PollEvent(&event))
-        {   
+        {
             // Quit event handeler
             if (event.type == SDL_QUIT)
                 running = false;
@@ -421,7 +449,7 @@ int main()
                 clearActivity(board);
 
                 SDL_GetMouseState(&xCoord, &yCoord);
-                
+
                 // Getting the Square coordinates based on the mouse position
                 getCellByMouse(&i, &j, yCoord, xCoord);
 
@@ -435,17 +463,47 @@ int main()
                 {
                     if (event.key.keysym.sym == SDLK_0 + k)
                     {
-                        // Getting the number in the specific square
-                        placeNumber(k, board, i, j, renderer, font);
-                        break;
+                        if (!checkMove(k, matrix, i, j))
+                        {
+                            SDL_Color textColor = {0, 255, 0, 0};
+                            // Getting the number in the specific square
+                            placeNumber(k, board, i, j, renderer, font, textColor);
+                            finishFlag++;
+                            break;
+                        }
+                        else{
+                            printf("Invalid Move!\n");
+                            board[i][j].isSelected = false;
+                            board[i][j].isSelectable = true;
+                        }
+                            
+
                     }
                 }
+
+                // If one of the enter keys is pressed the game autocompletes and ends
+                if (event.key.keysym.sym == SDLK_KP_ENTER || event.key.keysym.sym == SDLK_RETURN)
+                {
+                    // Function that completes the remaining Squares
+                    autoComplete(matrix, board, renderer, font);
+                }
+                
             }
         }
         // Drawing the board with everithing loaded in
         drawBoard(renderer, rect, rect2, board);
+        
+        // Checking if all the Sudoku Squares are completed and ends the game cycle
+        if (finishFlag == 81)
+        {
+            printf("Game Complete!\n");
+            running = false;
+        }
+        
     }
 
+    // Delay of 5 seconds after game ended
+    SDL_Delay(5000);
     cleanBoard(board);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
