@@ -375,7 +375,9 @@ void autoComplete(int matrix[ROW][COL], SudSquare board[ROW][COL], SDL_Renderer 
 
 int main()
 {
+    // Variables to store the level and difficulty of the chosen game
     int difficulty = -1, level = -1;
+    
     int matrix[9][9] = {
         {9, 1, 0, 7, 0, 0, 0, 0, 0},
         {0, 3, 2, 6, 0, 9, 0, 8, 0},
@@ -416,7 +418,8 @@ int main()
         exit(EXIT_FAILURE);
     }
 
-    generateMenu(matrix, font, renderer, &difficulty, &level);
+    // Function to open the menu and select game
+    generateMenu(font, renderer, &difficulty, &level);
 
     // The Sudoku bord consisting of Square structs
     SudSquare board[ROW][COL];
@@ -436,6 +439,8 @@ int main()
     bool running = true;
     // Flag to determine if a SudSquare is selected
     bool selectedSquare = false;
+    
+    
     // Main game loop
     while (running)
     {
