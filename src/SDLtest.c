@@ -375,7 +375,7 @@ void autoComplete(int matrix[ROW][COL], SudSquare board[ROW][COL], SDL_Renderer 
 
 int main()
 {
-
+    int difficulty = -1, level = -1;
     int matrix[9][9] = {
         {9, 1, 0, 7, 0, 0, 0, 0, 0},
         {0, 3, 2, 6, 0, 9, 0, 8, 0},
@@ -416,8 +416,7 @@ int main()
         exit(EXIT_FAILURE);
     }
 
-    generateMenu(matrix, font, renderer);
-
+    generateMenu(matrix, font, renderer, &difficulty, &level);
 
     // The Sudoku bord consisting of Square structs
     SudSquare board[ROW][COL];

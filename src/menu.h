@@ -11,6 +11,6 @@ typedef struct menuButton{
     SDL_Texture* texture;
 }MenuButton;
 
-void generateMenu(int matrix[9][9], TTF_Font* font, SDL_Renderer* rend);
+void generateMenu(int matrix[9][9], TTF_Font* font, SDL_Renderer* rend, int* difficulty, int* level);
 
 #endif
