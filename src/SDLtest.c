@@ -4,6 +4,7 @@
 #include <stdbool.h>
 
 #include "SudokuSolv.h"
+#include "menu.h"
 
 const int WIDTH = 600;
 const int HEIGHT = 600;
@@ -354,20 +355,22 @@ int placeNumber(int num, SudSquare board[ROW][COL], int i, int j, SDL_Renderer *
  * @param rend the SDL_Renderer used to render the window
  * @param font a pointer to the loaded font
 **/
-void autoComplete(int matrix[ROW][COL], SudSquare board[ROW][COL], SDL_Renderer *rend, TTF_Font *font){
+void autoComplete(int matrix[ROW][COL], SudSquare board[ROW][COL], SDL_Renderer *rend, TTF_Font *font)
+{
     //sets the color to pink-ish
     SDL_Color textColor = {237, 52, 135, 0};
     for (int i = 0; i < ROW; i++)
     {
         for (int j = 0; j < COL; j++)
         {
-            if (!(board[i][j].isSet)){
+            if (!(board[i][j].isSet))
+            {
                 // If the Square is not Set, set the coresponding number and update finishFlag
                 placeNumber(matrix[i][j], board, i, j, rend, font, textColor);
                 finishFlag++;
             }
-        }    
-    }    
+        }
+    }
 }
 
 int main()
@@ -413,6 +416,9 @@ int main()
         exit(EXIT_FAILURE);
     }
 
+    generateMenu(matrix, font, renderer);
+
+
     // The Sudoku bord consisting of Square structs
     SudSquare board[ROW][COL];
 
@@ -457,27 +463,29 @@ int main()
                 selectedSquare = checkMouseEvent(board, event, i, j);
             }
             // KeyPressed event handler
-            else if (selectedSquare && event.type == SDL_KEYDOWN)
+            else if (event.type == SDL_KEYDOWN)
             {
-                for (int k = 1; k < 10; k++)
+                if (selectedSquare)
                 {
-                    if (event.key.keysym.sym == SDLK_0 + k)
+                    for (int k = 1; k < 10; k++)
                     {
-                        if (!checkMove(k, matrix, i, j))
+                        if (event.key.keysym.sym == SDLK_0 + k)
                         {
-                            SDL_Color textColor = {0, 255, 0, 0};
-                            // Getting the number in the specific square
-                            placeNumber(k, board, i, j, renderer, font, textColor);
-                            finishFlag++;
-                            break;
+                            if (!checkMove(k, matrix, i, j))
+                            {
+                                SDL_Color textColor = {0, 255, 0, 0};
+                                // Getting the number in the specific square
+                                placeNumber(k, board, i, j, renderer, font, textColor);
+                                finishFlag++;
+                                break;
+                            }
+                            else
+                            {
+                                printf("Invalid Move!\n");
+                                board[i][j].isSelected = false;
+                                board[i][j].isSelectable = true;
+                            }
                         }
-                        else{
-                            printf("Invalid Move!\n");
-                            board[i][j].isSelected = false;
-                            board[i][j].isSelectable = true;
-                        }
-                            
-
                     }
                 }
 
@@ -487,23 +495,21 @@ int main()
                     // Function that completes the remaining Squares
                     autoComplete(matrix, board, renderer, font);
                 }
-                
             }
         }
         // Drawing the board with everithing loaded in
         drawBoard(renderer, rect, rect2, board);
-        
+
         // Checking if all the Sudoku Squares are completed and ends the game cycle
         if (finishFlag == 81)
         {
             printf("Game Complete!\n");
             running = false;
         }
-        
     }
 
     // Delay of 5 seconds after game ended
-    SDL_Delay(5000);
+    SDL_Delay(1000);
     cleanBoard(board);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
