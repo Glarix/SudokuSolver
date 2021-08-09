@@ -385,23 +385,18 @@ void autoComplete(int matrix[ROW][COL], SudSquare board[ROW][COL], SDL_Renderer 
     }
 }
 
-int main()
+int main(int argc, char* argv[])
 {
+    if (argc < 2){
+        printf("Error: Current directory path not specified!\n");
+        return 1;
+    }
+
     srand(time(NULL));
     // Variables to store the level and difficulty of the chosen game
     int difficulty = -1, level = -1;
     
-    // int matrix[9][9] = {
-    //     {9, 1, 0, 7, 0, 0, 0, 0, 0},
-    //     {0, 3, 2, 6, 0, 9, 0, 8, 0},
-    //     {0, 0, 7, 0, 8, 0, 9, 0, 0},
-    //     {0, 8, 6, 0, 3, 0, 1, 7, 0},
-    //     {3, 0, 0, 0, 0, 0, 0, 0, 6},
-    //     {0, 5, 1, 0, 2, 0, 8, 4, 0},
-    //     {0, 0, 9, 0, 5, 0, 3, 0, 0},
-    //     {0, 2, 0, 3, 0, 1, 4, 9, 0},
-    //     {0, 0, 0, 0, 0, 2, 0, 6, 1}};
-
+    // the matrix that contains all the corect numbers for the selected game
     int matrix[9][9] = {0};
 
     // The window that is displayed on screen
@@ -429,6 +424,9 @@ int main()
     TTF_Font *font = TTF_OpenFont("/usr/share/fonts/truetype/freefont/FreeMono.ttf", 12);
     if (font == NULL)
     {
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        SDL_Quit();
         fprintf(stderr, "error: font not found\n");
         exit(EXIT_FAILURE);
     }
@@ -436,10 +434,20 @@ int main()
     // Function to open the menu and select game
     generateMenu(font, renderer, &difficulty, &level);
 
+
+    // Link creation part for selecting a random game
+
+    // Char arrays to save the difficulty and level number(second and 4th part of the link)
     char diff[5], lvl[8];
+    // First part of the link
     char link[37] = "https://nine.websudoku.com/?level=";
+    //Second part of the link
     char link2[10] = "&set_id=";
+
+    // Optaining difficulty and level in text form
     char* firstConcat = NULL;
+    char* finalPath = NULL;
+
     if(level == -1){
         int randLvl = int_rand();
         sprintf(lvl, "%d", randLvl);
@@ -447,12 +455,27 @@ int main()
         sprintf(lvl, "%d", level);    
     }
     sprintf(diff, "%d", difficulty);
-    firstConcat = concat(link, diff);
-    firstConcat = concat(firstConcat, link2);
-    firstConcat = concat(firstConcat, lvl);
 
-    getRequestedTable(firstConcat, matrix);
-    
+    if (level == -1){
+        // Creating the link
+        firstConcat = concat(link, diff);
+        firstConcat = concat(firstConcat, link2);
+        firstConcat = concat(firstConcat, lvl);
+
+        // Getting the data from Sudoku website
+        getRequestedTable(firstConcat, matrix);
+    }else{
+        char path[10] = "levels/";
+        char delim[10] = "/level";
+        char ext[7] = ".txt";
+        finalPath = concat(argv[1], path);
+        finalPath = concat(finalPath, diff);
+        finalPath = concat(finalPath, delim);
+        finalPath = concat(finalPath, lvl);
+        finalPath = concat(finalPath, ext);
+        printf("%s\n", finalPath);
+        loadLevelFromDb(finalPath, matrix);
+    }
 
     // The Sudoku bord consisting of Square structs
     SudSquare board[ROW][COL];
@@ -502,7 +525,7 @@ int main()
             // KeyPressed event handler
             else if (event.type == SDL_KEYDOWN)
             {
-                if (selectedSquare)
+                if (selectedSquare && !(board[i][j].isSet))
                 {
                     for (int k = 1; k < 10; k++)
                     {
@@ -544,8 +567,13 @@ int main()
             running = false;
         }
     }
-
-    free(firstConcat);
+    
+    
+    if (firstConcat)
+        free(firstConcat);
+    if(finalPath)
+        free(finalPath);
+    
     // Delay of 5 seconds after game ended
     SDL_Delay(1000);
     cleanBoard(board);
@@ -556,3 +584,4 @@ int main()
     SDL_Quit();
     return 0;
 }
+

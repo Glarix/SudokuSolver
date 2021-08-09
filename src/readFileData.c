@@ -306,7 +306,9 @@ void getSudokuData(char sudokuDataChar[81], char* readFileName){
                 getline(&line, &len, fr); // <TD> LINE
                 getline(&line, &len, fr); // <INPUT> LINE
                 //int index = search(line, "READONLY VALUE=", 2); // Call of the search function with mode 2 which returns the index of the pattern occurence
+                // For some reason the line above is not working ok anymore so hardcoded aproach
                 int index = -1;
+                // If a line has the letter 'R' at index 54, it contains information about a number on the board
                 if (line[54] == 'R')
                 {
                     index = 54;
@@ -347,6 +349,12 @@ void charArrToIntMatrix(char sudokuDataChar[81], int sudokuDataIntBoard[9][9]){
 }
 
 
+/**
+ * Function to concatenate two char*'s
+ * @param s1 the first char*
+ * @param s2 the char* to be concatenated to s1
+ * @return the the concatenated string
+**/
 char* concat(const char *s1, const char *s2){
     char *result = malloc(strlen(s1) + strlen(s2) + 1); // +1 for the null-terminator
     if(!result){
@@ -357,7 +365,11 @@ char* concat(const char *s1, const char *s2){
     return result;
 }
 
-
+/**
+ * Function to get the informations about the requested table of SUDOKU
+ * @param URL the char* containing the full URL which contains the data for the table
+ * @param matrix the int matrix that will store all information necessary for the game
+**/
 void getRequestedTable(char* URL, int matrix[9][9]){
     
     char sudokuDataChar[81] = {"0"};
@@ -367,5 +379,11 @@ void getRequestedTable(char* URL, int matrix[9][9]){
     findTableData("request2.txt");
     arrangeData("foundData.txt");
     getSudokuData(sudokuDataChar, "foundData.txt");
+    charArrToIntMatrix(sudokuDataChar, matrix);
+}
+
+void loadLevelFromDb(char* path, int matrix[9][9]){
+    char sudokuDataChar[81] = {"0"};
+    getSudokuData(sudokuDataChar, path);
     charArrToIntMatrix(sudokuDataChar, matrix);
 }
