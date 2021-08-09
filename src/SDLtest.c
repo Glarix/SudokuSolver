@@ -2,9 +2,12 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <stdbool.h>
+#include <time.h>
 
 #include "SudokuSolv.h"
 #include "menu.h"
+#include "readFileData.h"
+
 
 const int WIDTH = 600;
 const int HEIGHT = 600;
@@ -23,6 +26,15 @@ typedef struct sudokuSquare
     SDL_Texture *numTexture; // pointer to texture of number
     SDL_Rect suSquare;       // the rectangle struct for specific square
 } SudSquare;
+
+
+
+int int_rand(){//function to generate a random time period for sleep
+	int min = 21, max = 100000;
+    int num = (rand() % (max - min + 1)) + min;
+    return num;
+}
+
 
 /**
  * Function to initialise the window and renderer 
@@ -375,19 +387,22 @@ void autoComplete(int matrix[ROW][COL], SudSquare board[ROW][COL], SDL_Renderer 
 
 int main()
 {
+    srand(time(NULL));
     // Variables to store the level and difficulty of the chosen game
     int difficulty = -1, level = -1;
     
-    int matrix[9][9] = {
-        {9, 1, 0, 7, 0, 0, 0, 0, 0},
-        {0, 3, 2, 6, 0, 9, 0, 8, 0},
-        {0, 0, 7, 0, 8, 0, 9, 0, 0},
-        {0, 8, 6, 0, 3, 0, 1, 7, 0},
-        {3, 0, 0, 0, 0, 0, 0, 0, 6},
-        {0, 5, 1, 0, 2, 0, 8, 4, 0},
-        {0, 0, 9, 0, 5, 0, 3, 0, 0},
-        {0, 2, 0, 3, 0, 1, 4, 9, 0},
-        {0, 0, 0, 0, 0, 2, 0, 6, 1}};
+    // int matrix[9][9] = {
+    //     {9, 1, 0, 7, 0, 0, 0, 0, 0},
+    //     {0, 3, 2, 6, 0, 9, 0, 8, 0},
+    //     {0, 0, 7, 0, 8, 0, 9, 0, 0},
+    //     {0, 8, 6, 0, 3, 0, 1, 7, 0},
+    //     {3, 0, 0, 0, 0, 0, 0, 0, 6},
+    //     {0, 5, 1, 0, 2, 0, 8, 4, 0},
+    //     {0, 0, 9, 0, 5, 0, 3, 0, 0},
+    //     {0, 2, 0, 3, 0, 1, 4, 9, 0},
+    //     {0, 0, 0, 0, 0, 2, 0, 6, 1}};
+
+    int matrix[9][9] = {0};
 
     // The window that is displayed on screen
     SDL_Window *window = NULL;
@@ -420,6 +435,24 @@ int main()
 
     // Function to open the menu and select game
     generateMenu(font, renderer, &difficulty, &level);
+
+    char diff[5], lvl[8];
+    char link[37] = "https://nine.websudoku.com/?level=";
+    char link2[10] = "&set_id=";
+    char* firstConcat = NULL;
+    if(level == -1){
+        int randLvl = int_rand();
+        sprintf(lvl, "%d", randLvl);
+    }else{
+        sprintf(lvl, "%d", level);    
+    }
+    sprintf(diff, "%d", difficulty);
+    firstConcat = concat(link, diff);
+    firstConcat = concat(firstConcat, link2);
+    firstConcat = concat(firstConcat, lvl);
+
+    getRequestedTable(firstConcat, matrix);
+    
 
     // The Sudoku bord consisting of Square structs
     SudSquare board[ROW][COL];
@@ -512,6 +545,7 @@ int main()
         }
     }
 
+    free(firstConcat);
     // Delay of 5 seconds after game ended
     SDL_Delay(1000);
     cleanBoard(board);

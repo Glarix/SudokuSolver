@@ -13,20 +13,20 @@ void createMenuButtons(MenuButton *randomButton, MenuButton *chooseButton, MenuB
     // Creating random button
     randomButton->rect.x = 100;
     randomButton->rect.y = 285;
-    randomButton->rect.w = 100;
+    randomButton->rect.w = 150;
     randomButton->rect.h = 30;
     SDL_Surface *surf;
-    surf = TTF_RenderText_Solid(font, "Random", color);
+    surf = TTF_RenderText_Solid(font, "Random level", color);
     randomButton->texture = SDL_CreateTextureFromSurface(rend, surf);
     SDL_FreeSurface(surf);
 
     // Creating choose button
-    chooseButton->rect.x = 400;
+    chooseButton->rect.x = 350;
     chooseButton->rect.y = 285;
-    chooseButton->rect.w = 100;
+    chooseButton->rect.w = 150;
     chooseButton->rect.h = 30;
     SDL_Surface *surf2;
-    surf2 = TTF_RenderText_Solid(font, "Choose", color);
+    surf2 = TTF_RenderText_Solid(font, "Choose level", color);
     chooseButton->texture = SDL_CreateTextureFromSurface(rend, surf2);
     SDL_FreeSurface(surf2);
 
@@ -231,14 +231,14 @@ void generateMenu( TTF_Font *font, SDL_Renderer *rend, int* difficulty, int* lev
                     // Checking if one of the two buttons was clicked
 
                     // If random button is clicked
-                    if (x > 100 && x < 200 && y > 285 && y < 315)
+                    if (x > 100 && x < 250 && y > 285 && y < 315)
                     {
                         //printf("clicked random\n");
                         displayer = 2;
                         mode = 1;
                     }
                     // If choose button is clicked
-                    if (x > 400 && x < 500 && y > 285 && y < 315)
+                    if (x > 350 && x < 500 && y > 285 && y < 315)
                     {
                         //printf("clicked choose\n");
                         mode = 2;
