@@ -373,7 +373,6 @@ char* concat(const char *s1, const char *s2){
 void getRequestedTable(char* URL, int matrix[9][9]){
     
     char sudokuDataChar[81] = {"0"};
-    printf("\n%s\n", URL);
     
     get_html(URL);
     findTableData("request2.txt");

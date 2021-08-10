@@ -8,13 +8,12 @@
 #include "menu.h"
 #include "readFileData.h"
 
-
 const int WIDTH = 600;
 const int HEIGHT = 600;
 const int ROW = 9;
 const int COL = 9;
 
-int finishFlag = 0;
+int finishFlag = 0, mistakes = 0;
 
 // Structure of a square from the Sudoku board
 typedef struct sudokuSquare
@@ -28,13 +27,12 @@ typedef struct sudokuSquare
 } SudSquare;
 
 
-
-int int_rand(){//function to generate a random time period for sleep
-	int min = 21, max = 100000;
+int int_rand()
+{ //function to generate a random time period for sleep
+    int min = 21, max = 100000;
     int num = (rand() % (max - min + 1)) + min;
     return num;
 }
-
 
 /**
  * Function to initialise the window and renderer 
@@ -268,6 +266,21 @@ void drawBoard(SDL_Renderer *renderer, SDL_Rect rect, SDL_Rect rect2, SudSquare 
     }
     mod = 1;
 
+    // Initial reference position for the mistake markers 
+    int mistakePosX = 30;
+    int mistakePosY = 571;
+    // If one or more mistakes has been made, show an indicator on screen for each mistake
+    if (mistakes){
+         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        for (int i = 0; i < mistakes; i++)
+        {
+            SDL_RenderDrawLine(renderer, mistakePosX, mistakePosY, mistakePosX + 20, mistakePosY + 29);
+            SDL_RenderDrawLine(renderer, mistakePosX + 20, mistakePosY, mistakePosX, mistakePosY + 29);
+            mistakePosX += 40;
+        }
+        
+    }
+
     // Swithing the front buffer with the back buffer
     SDL_RenderPresent(renderer);
 }
@@ -385,9 +398,11 @@ void autoComplete(int matrix[ROW][COL], SudSquare board[ROW][COL], SDL_Renderer 
     }
 }
 
-int main(int argc, char* argv[])
+
+int main(int argc, char *argv[])
 {
-    if (argc < 2){
+    if (argc < 2)
+    {
         printf("Error: Current directory path not specified!\n");
         return 1;
     }
@@ -395,7 +410,7 @@ int main(int argc, char* argv[])
     srand(time(NULL));
     // Variables to store the level and difficulty of the chosen game
     int difficulty = -1, level = -1;
-    
+
     // the matrix that contains all the corect numbers for the selected game
     int matrix[9][9] = {0};
 
@@ -434,7 +449,6 @@ int main(int argc, char* argv[])
     // Function to open the menu and select game
     generateMenu(font, renderer, &difficulty, &level);
 
-
     // Link creation part for selecting a random game
 
     // Char arrays to save the difficulty and level number(second and 4th part of the link)
@@ -445,18 +459,22 @@ int main(int argc, char* argv[])
     char link2[10] = "&set_id=";
 
     // Optaining difficulty and level in text form
-    char* firstConcat = NULL;
-    char* finalPath = NULL;
+    char *firstConcat = NULL;
+    char *finalPath = NULL;
 
-    if(level == -1){
+    if (level == -1)
+    {
         int randLvl = int_rand();
         sprintf(lvl, "%d", randLvl);
-    }else{
-        sprintf(lvl, "%d", level);    
+    }
+    else
+    {
+        sprintf(lvl, "%d", level);
     }
     sprintf(diff, "%d", difficulty);
 
-    if (level == -1){
+    if (level == -1)
+    {
         // Creating the link
         firstConcat = concat(link, diff);
         firstConcat = concat(firstConcat, link2);
@@ -464,7 +482,10 @@ int main(int argc, char* argv[])
 
         // Getting the data from Sudoku website
         getRequestedTable(firstConcat, matrix);
-    }else{
+    }
+    else
+    {
+        // Creating the path for choosen level to be loaded
         char path[10] = "levels/";
         char delim[10] = "/level";
         char ext[7] = ".txt";
@@ -495,8 +516,7 @@ int main(int argc, char* argv[])
     bool running = true;
     // Flag to determine if a SudSquare is selected
     bool selectedSquare = false;
-    
-    
+
     // Main game loop
     while (running)
     {
@@ -542,6 +562,7 @@ int main(int argc, char* argv[])
                             else
                             {
                                 printf("Invalid Move!\n");
+                                mistakes++;
                                 board[i][j].isSelected = false;
                                 board[i][j].isSelectable = true;
                             }
@@ -566,16 +587,22 @@ int main(int argc, char* argv[])
             printf("Game Complete!\n");
             running = false;
         }
+
+        // At 3 mistakes the game is over
+        if (mistakes >= 3)
+        {
+            printf("Too many mistakes. Game over!\n");
+            running = false;
+        }
     }
-    
-    
+
     if (firstConcat)
         free(firstConcat);
-    if(finalPath)
+    if (finalPath)
         free(finalPath);
-    
+
     // Delay of 5 seconds after game ended
-    SDL_Delay(1000);
+    SDL_Delay(2000);
     cleanBoard(board);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
@@ -584,4 +611,3 @@ int main(int argc, char* argv[])
     SDL_Quit();
     return 0;
 }
-
