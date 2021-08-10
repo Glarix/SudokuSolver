@@ -4,9 +4,9 @@
 #include <stdbool.h>
 #include <time.h>
 
-#include "SudokuSolv.h"
-#include "menu.h"
-#include "readFileData.h"
+#include "../include/SudokuSolv.h"
+#include "../include/menu.h"
+#include "../include/readFileData.h"
 
 const int WIDTH = 600;
 const int HEIGHT = 600;

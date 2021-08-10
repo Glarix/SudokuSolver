@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "SudokuSolv.h"
+#include "../include/SudokuSolv.h"
 /**
  * Fuction to find the first empty spot on a board (value 0)
  * @param board[9][9] the Sudoku board to be checked

@@ -1,4 +1,4 @@
-#include "menu.h"
+#include "../include/menu.h"
 /**
  * Function to prepare the needed buttons to be displayed on the menu
  * @param randomButton a MenuButton that will represent the Random option button
