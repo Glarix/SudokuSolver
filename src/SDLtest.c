@@ -508,7 +508,7 @@ int main(int argc, char *argv[])
 
     // the two rects that go around the board
     SDL_Rect rect = {30, 30, 540, 540};
-    SDL_Rect rect2 = {29, 29, 539, 539};
+    SDL_Rect rect2 = {29, 29, 542, 542};
 
     SDL_Event event;
 
