@@ -588,8 +588,8 @@ int main(int argc, char *argv[])
             running = false;
         }
 
-        // At 3 mistakes the game is over
-        if (mistakes >= 3)
+        // At 4 mistakes the game is over
+        if (mistakes > 3)
         {
             printf("Too many mistakes. Game over!\n");
             running = false;
