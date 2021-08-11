@@ -1,63 +1,6 @@
 #include "../include/readFileData.h"
 
 
-/**
- * Function to print a Sudoku board to the console
- * @param board[9][9] the Sudoku board to be printed
-*/
-void printBoard(int board[9][9]){
-    
-    printf("\n\n");
-
-    for (int i = 0; i < 9; i++)
-    {
-        if (i % 3 == 0 && i != 0)
-        {
-            printf("-------------------------------\n");
-        }
-        for (int j = 0; j < 9; j++)
-        {   
-
-            if (j % 3 == 0 && j != 0)
-            {
-                printf("|");
-            }
-            printf(" %d ", board[i][j]);
-        }
-        printf("\n");
-    }
-    printf("\n\n");
-    
-}
-/**
- * Function to print a Sudoku board to the console
- * @param board[9][9] the Sudoku board to be printed
-*/
-void printBoardchr(char board[81]){
-    int count = 0;
-    printf("\n\n");
-
-    for (int i = 0; i < 9; i++)
-    {
-        if (i % 3 == 0 && i != 0)
-        {
-            printf("-------------------------------\n");
-        }
-        for (int j = 0; j < 9; j++)
-        {   
-
-            if (j % 3 == 0 && j != 0)
-            {
-                printf("|");
-            }
-            printf(" %c ", board[count]);
-            count++;
-        }
-        printf("\n");
-    }
-    printf("\n\n");
-    
-}
 
 // A utility function to get maximum of two integers
 int max (int a, int b) { return (a > b)? a: b; }

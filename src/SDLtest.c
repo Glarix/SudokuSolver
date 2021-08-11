@@ -601,8 +601,18 @@ int main(int argc, char *argv[])
     if (finalPath)
         free(finalPath);
 
-    // Delay of 5 seconds after game ended
-    SDL_Delay(2000);
+    running = true;
+
+    // The game closing loop
+    while (running)
+    {
+        while (SDL_PollEvent(&event)){
+            // Quit event handeler
+            if (event.type == SDL_QUIT)
+                running = false;
+        }
+    }
+    
     cleanBoard(board);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
