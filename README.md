@@ -56,7 +56,7 @@ You must include the path to the directory that contains the \<levels\> director
 
 After the program runs you can select either a Random level or a pre-saved level by clicking one of the two buttons. 
 
-Next the 4 possible difficulty categories will appear on the screen and you will have to sellect one of them:
+Next, the 4 possible difficulty categories will appear on the screen and you will have to select one of them:
 * 1 - Easy
 * 2 - Medium 
 * 3 - Hard 
